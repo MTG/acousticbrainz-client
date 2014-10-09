@@ -1,0 +1,2 @@
+pytaglib==0.4.1
+requests==2.4.3
