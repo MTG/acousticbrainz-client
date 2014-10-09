@@ -2,7 +2,7 @@ import ConfigParser
 import os
 import hashlib
 
-CONFIG_FILE=".acousticbrainz.conf"
+CONFIG_FILE=".abzsubmit.conf"
 
 settings = {}
 
