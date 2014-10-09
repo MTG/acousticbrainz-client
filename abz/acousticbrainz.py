@@ -108,6 +108,7 @@ def process_directory(directory_path):
 def process(path):
     if not os.path.exists(path):
         exit(path + "does not exist")
+    path = os.path.abspath(path)
     if os.path.isfile(path):
         process_file(path)
     elif os.path.isdir(path):
