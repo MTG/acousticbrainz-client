@@ -9,6 +9,9 @@ import requests
 import taglib
 
 import config
+
+from sys import exit
+
 config.load_settings()
 
 processed_files = set()
@@ -100,3 +103,12 @@ def process_directory(directory_path):
         for f in filenames:
             if f.lower().endswith(config.settings["extensions"]):
                 process_file(os.path.abspath(os.path.join(dirpath, f)))
+
+
+def process(path):
+    if not os.path.exists(path):
+        exit(path + "does not exist")
+    if os.path.isfile(path):
+        process_file(path)
+    elif os.path.isdir(path):
+        process_directory(path)
