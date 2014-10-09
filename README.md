@@ -34,8 +34,8 @@ your PATH.
 The extractor is provided as part of the essentia project. You can compile
 your own extractor if you want. Just download essentia and compile it with examples
 
-   ./waf configure --with-examples
-   ./waf
+    ./waf configure --with-examples
+    ./waf
 
 and get the resulting file from `build/src/examples/streaming_extractor_music`
 
