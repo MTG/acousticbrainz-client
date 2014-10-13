@@ -25,13 +25,13 @@ conn = sqlite3.connect(config.get_sqlite_file())
 def add_to_filelist(filepath, reason=None):
     query = """insert into filelog(filename, reason) values(?, ?)"""
     c = conn.cursor()
-    r = c.execute(query, (filepath, reason))
+    r = c.execute(query, (filepath.decode("utf-8"), reason))
     conn.commit()
 
 def is_processed(filepath):
     query = """select * from filelog where filename = ?"""
     c = conn.cursor()
-    r = c.execute(query, (filepath, ))
+    r = c.execute(query, (filepath.decode("utf-8"), ))
     if len(r.fetchall()):
         return True
     else:

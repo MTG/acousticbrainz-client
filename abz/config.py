@@ -39,7 +39,7 @@ def migrate_old_settings(dbfile):
         for l in open(PROCESSED_FILE_LIST).readlines():
             l = l.strip()
             query = """insert into filelog(filename) values(?)"""
-            c.execute(query, (l, ))
+            c.execute(query, (l.decode("utf-8"), ))
         conn.commit()
         os.unlink(PROCESSED_FILE_LIST)
 
