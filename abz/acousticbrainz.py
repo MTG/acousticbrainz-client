@@ -2,12 +2,15 @@
 # acousticbrainz-client is available under the terms of the GNU
 # General Public License, version 3 or higher. See COPYING for more details.
 
+from __future__ import print_function
+
 import json
 import os
 import subprocess
 import tempfile
 import urlparse
 import uuid
+import sqlite3
 
 import requests
 import taglib
@@ -17,27 +20,22 @@ import config
 from sys import exit
 
 config.load_settings()
+conn = sqlite3.connect(config.get_sqlite_file())
 
-processed_files = set()
-PROCESSED_FILE_LIST = os.path.expanduser("~/.abzsubmit.log")
-def load_processed_filelist():
-    global processed_files
-    if os.path.exists(PROCESSED_FILE_LIST):
-        fp = open(PROCESSED_FILE_LIST)
-        lines = [l.strip() for l in list(fp)]
-        processed_files = set(lines)
-
-def add_to_filelist(filepath):
-    # TODO: This will slow down as more files are processed. We should
-    # keep an open file handle and append to it
-    processed_files.add(filepath)
-    fp = open(PROCESSED_FILE_LIST, "w")
-    for f in processed_files:
-        fp.write("%s\n" % f)
-    fp.close()
+def add_to_filelist(filepath, reason=None):
+    query = """insert into filelog(filename, reason) values(?, ?)"""
+    c = conn.cursor()
+    r = c.execute(query, (filepath, reason))
+    conn.commit()
 
 def is_processed(filepath):
-    return filepath in processed_files
+    query = """select * from filelog where filename = ?"""
+    c = conn.cursor()
+    r = c.execute(query, (filepath, ))
+    if len(r.fetchall()):
+        return True
+    else:
+        return False
 
 def get_musicbrainz_recordingid(filepath):
     f = taglib.File(filepath)
@@ -84,23 +82,23 @@ def extractor_output_file_name(base):
 
 
 def process_file(filepath):
-    print "Processing file", filepath
+    print("Processing file %s" % filepath)
     if is_processed(filepath):
-        print " * already processed, skipping"
+        print(" * already processed, skipping")
         return
     recid = get_musicbrainz_recordingid(filepath)
     # TODO: We need to decide if this is lossless
     lossless = filepath.lower().endswith(".flac")
 
     if recid:
-        print " - has recid", recid
+        print(" - has recid %s" % recid)
         fd, tmpname = tempfile.mkstemp(suffix='.json')
         os.close(fd)
         os.unlink(tmpname)
         try:
             run_extractor(filepath, tmpname)
         except subprocess.CalledProcessError as e:
-            print " ** The extractors return code was", e.returncode
+            print(" ** The extractor's return code was %s" % e.returncode)
         else:
             tmpname = extractor_output_file_name(tmpname)
             features = json.load(open(tmpname))
@@ -110,18 +108,18 @@ def process_file(filepath):
             try:
                 submit_features(recid, features)
             except requests.exceptions.HTTPError as e:
-                print " ** Got an error submitting the track. Error was:"
-                print e.response.text
+                print(" ** Got an error submitting the track. Error was:")
+                print(e.response.text)
             add_to_filelist(filepath)
         finally:
             tmpname = extractor_output_file_name(tmpname)
             if os.path.isfile(tmpname):
                 os.unlink(tmpname)
     else:
-        print " - no recid"
+        print(" - no recid")
 
 def process_directory(directory_path):
-    print "processing directory", directory_path
+    print("processing directory %s" % directory_path)
 
     for dirpath, dirnames, filenames in os.walk(directory_path):
         for f in filenames:

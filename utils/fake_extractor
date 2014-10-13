@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# Copyright 2014 Music Technology Group - Universitat Pompeu Fabra
+# acousticbrainz-client is available under the terms of the GNU
+# General Public License, version 3 or higher. See COPYING for more details.
+
+import sys
+import json
+
+if len(sys.argv) < 3:
+    pass
+input = sys.argv[1]
+output = sys.argv[2]
+
+data = {"metadata": {"version": {"v": "1"}, "audio_properties": {"prop": "1"}}}
+json.dump(data, open(output, "w"))

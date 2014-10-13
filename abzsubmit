@@ -10,7 +10,6 @@ import argparse
 from abz import acousticbrainz
 
 def main(paths):
-    acousticbrainz.load_processed_filelist()
     for path in paths:
         acousticbrainz.process(path)
 
