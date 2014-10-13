@@ -84,18 +84,13 @@ def process_file(filepath):
 
     if recid:
         print " - has recid", recid
-        fd, tmpname = tempfile.mkstemp()
+        fd, tmpname = tempfile.mkstemp(suffix='.json')
         os.close(fd)
-        os.unlink(tmpname)
         try:
             run_extractor(filepath, tmpname)
         except subprocess.CalledProcessError as e:
             print " ** The extractors return code was", e.returncode
         else:
-            # The extractor adds .json to the filename you give it, so
-            # we don't pass that, and use it afterwards to read the file.
-            # This is an abuse of mkstemp, sorry.
-            tmpname = "%s.json" % tmpname
             features = json.load(open(tmpname))
             features["metadata"]["version"]["essentia_build_sha"] = config.settings["essentia_build_sha"]
             features["metadata"]["audio_properties"]["lossless"] = lossless
