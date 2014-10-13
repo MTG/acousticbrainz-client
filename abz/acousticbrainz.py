@@ -73,6 +73,16 @@ def submit_features(recordingid, features):
     r = requests.post(url, data=featstr)
     r.raise_for_status()
 
+def extractor_output_file_name(base):
+    """
+    Returns `base` + ".json" if that file exists and just `base` otherwise.
+    """
+    maybename = base + os.extsep + "json"
+    if os.path.isfile(maybename):
+        return maybename
+    return base
+
+
 def process_file(filepath):
     print "Processing file", filepath
     if is_processed(filepath):
@@ -86,11 +96,13 @@ def process_file(filepath):
         print " - has recid", recid
         fd, tmpname = tempfile.mkstemp(suffix='.json')
         os.close(fd)
+        os.unlink(tmpname)
         try:
             run_extractor(filepath, tmpname)
         except subprocess.CalledProcessError as e:
             print " ** The extractors return code was", e.returncode
         else:
+            tmpname = extractor_output_file_name(tmpname)
             features = json.load(open(tmpname))
             features["metadata"]["version"]["essentia_build_sha"] = config.settings["essentia_build_sha"]
             features["metadata"]["audio_properties"]["lossless"] = lossless
@@ -102,6 +114,7 @@ def process_file(filepath):
                 print e.response.text
             add_to_filelist(filepath)
         finally:
+            tmpname = extractor_output_file_name(tmpname)
             if os.path.isfile(tmpname):
                 os.unlink(tmpname)
     else:
