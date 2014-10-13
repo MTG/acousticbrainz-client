@@ -61,14 +61,12 @@ def load_settings():
     if os.path.exists(OLDCONFIGFILE) or os.path.exists(PROCESSED_FILE_LIST):
         migrate_old_settings(dbfile)
 
-    configfile = os.path.join(get_config_dir(), CONFIG_FILE)
-
     defaultfile = "abz/default.conf"
-    conffile = os.path.join(os.path.expanduser("~"), CONFIG_FILE)
+    configfile = os.path.join(get_config_dir(), CONFIG_FILE)
     config = ConfigParser.RawConfigParser()
     config.read(defaultfile)
-    if os.path.exists(conffile):
-        config.read(conffile)
+    if os.path.exists(configfile):
+        config.read(configfile)
 
     settings["host"] = config.get("acousticbrainz", "host")
 
