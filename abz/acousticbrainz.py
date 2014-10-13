@@ -80,15 +80,14 @@ def extractor_output_file_name(base):
         return maybename
     return base
 
-
+# codec names from ffmpeg
+lossless_codecs = ["alac", "ape", "flac", "shorten", "tak", "truehd", "tta", "wmalossless"]
 def process_file(filepath):
     print("Processing file %s" % filepath)
     if is_processed(filepath):
         print(" * already processed, skipping")
         return
     recid = get_musicbrainz_recordingid(filepath)
-    # TODO: We need to decide if this is lossless
-    lossless = filepath.lower().endswith(".flac")
 
     if recid:
         print(" - has recid %s" % recid)
@@ -99,18 +98,27 @@ def process_file(filepath):
             run_extractor(filepath, tmpname)
         except subprocess.CalledProcessError as e:
             print(" ** The extractor's return code was %s" % e.returncode)
+            add_to_filelist(filepath, "extractor")
         else:
             tmpname = extractor_output_file_name(tmpname)
-            features = json.load(open(tmpname))
-            features["metadata"]["version"]["essentia_build_sha"] = config.settings["essentia_build_sha"]
-            features["metadata"]["audio_properties"]["lossless"] = lossless
-
             try:
-                submit_features(recid, features)
-            except requests.exceptions.HTTPError as e:
-                print(" ** Got an error submitting the track. Error was:")
-                print(e.response.text)
-            add_to_filelist(filepath)
+                features = json.load(open(tmpname))
+                features["metadata"]["version"]["essentia_build_sha"] = config.settings["essentia_build_sha"]
+                encoder = features["metadata"]["audio_properties"]["codec"]
+                # There's a bunch of pcm types, so check them separately
+                lossless = encoder in lossless_codecs or encoder.startswith("pcm_")
+                features["metadata"]["audio_properties"]["lossless"] = lossless
+
+                try:
+                    submit_features(recid, features)
+                except requests.exceptions.HTTPError as e:
+                    print(" ** Got an error submitting the track. Error was:")
+                    print(e.response.text)
+                add_to_filelist(filepath)
+            except ValueError:
+                print(" ** Failed to read the output for this file to submit")
+                add_to_filelist(filepath, "json")
+
         finally:
             tmpname = extractor_output_file_name(tmpname)
             if os.path.isfile(tmpname):
