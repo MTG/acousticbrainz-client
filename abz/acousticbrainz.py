@@ -57,10 +57,13 @@ def get_musicbrainz_recordingid(filepath):
             return None
 
 def run_extractor(input_path, output_path):
+    """
+    :raises subprocess.CalledProcessError: if the extractor exits with a non-zero
+                                           return code
+    """
     extractor = config.settings["essentia_path"]
     args = [extractor, input_path, output_path]
-    p = subprocess.Popen(args)
-    p.communicate()
+    subprocess.check_call(args)
 
 def submit_features(recordingid, features):
     featstr = json.dumps(features)
@@ -84,24 +87,28 @@ def process_file(filepath):
         fd, tmpname = tempfile.mkstemp()
         os.close(fd)
         os.unlink(tmpname)
-        run_extractor(filepath, tmpname)
-        # The extractor adds .json to the filename you give it, so
-        # we don't pass that, and use it afterwards to read the file.
-        # This is an abuse of mkstemp, sorry.
-        tmpname = "%s.json" % tmpname
-
-        features = json.load(open(tmpname))
-        features["metadata"]["version"]["essentia_build_sha"] = config.settings["essentia_build_sha"]
-        features["metadata"]["audio_properties"]["lossless"] = lossless
-
         try:
-            submit_features(recid, features)
-        except requests.exceptions.HTTPError as e:
-            print " ** Got an error submitting the track. Error was:"
-            print e.response.text
+            run_extractor(filepath, tmpname)
+        except subprocess.CalledProcessError as e:
+            print " ** The extractors return code was", e.returncode
+        else:
+            # The extractor adds .json to the filename you give it, so
+            # we don't pass that, and use it afterwards to read the file.
+            # This is an abuse of mkstemp, sorry.
+            tmpname = "%s.json" % tmpname
+            features = json.load(open(tmpname))
+            features["metadata"]["version"]["essentia_build_sha"] = config.settings["essentia_build_sha"]
+            features["metadata"]["audio_properties"]["lossless"] = lossless
 
-        os.unlink(tmpname)
-        add_to_filelist(filepath)
+            try:
+                submit_features(recid, features)
+            except requests.exceptions.HTTPError as e:
+                print " ** Got an error submitting the track. Error was:"
+                print e.response.text
+            add_to_filelist(filepath)
+        finally:
+            if os.path.isfile(tmpname):
+                os.unlink(tmpname)
     else:
         print " - no recid"
 
