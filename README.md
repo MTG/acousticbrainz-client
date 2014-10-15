@@ -69,6 +69,15 @@ The log file lists each file that has been uploaded. This is so that the script
 does not send updates twice for the same file. When you have finished uploading
 features you can delete this file.
 
+FAQ
+---
+
+* __Why does Essentia need taglib and acousticbrainz-client also need pytaglib?:__ acousticbrainz-client uses pytaglib, first, to check if a file has a recording MBID before running Essentia. Essentia uses taglib for creating the 'tags' section of the output JSON.
+* __Why not just use the MBID from the tags section of Essentia's JSON then?:__ Because Essentia takes a bit to run, and we'd rather not run it on a file we won't be able to submit.
+* __Couldn't you do this some way that doesn't require running Essentia first but still doesn't require installing pytaglib to get this to work?:__ Yup, ideally we'd remove that extra dependency, and it's almost certainly possible. Pull requests welcome!
+* __Where does the md5 in the generated data come from, and what does it include?:__ Essentia produces this value, using FFmpeg/LibAV's MD5 calculation functions, passing av\_read\_frame packets to it.
+* __What about data that doesn't have recording MBIDs? Surely you can still do something with that.:__ Probably. But for now we aren't. We'd probably like non-MBID submissions to be possible, but determining the right way to index this sort of submission in external sources of metadata is a hard problem, and adding MBIDs to files isn't too hard for the pile of MusicBrainz editors we've been having run this code.
+
 License
 -------
 This application is Copyright Music Technology Group, Universitat Pompeu Fabra.
