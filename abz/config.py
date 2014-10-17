@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 
+import distutils
 import ConfigParser
 import os
 import sys
@@ -81,7 +82,7 @@ def load_settings():
     if os.path.exists(OLDCONFIGFILE) or os.path.exists(PROCESSED_FILE_LIST):
         migrate_old_settings(dbfile)
 
-    defaultfile = "abz/default.conf"
+    defaultfile = os.path.join(os.path.dirname(__file__), "default.conf")
     configfile = os.path.join(get_config_dir(), CONFIG_FILE)
     config = ConfigParser.RawConfigParser()
     config.read(defaultfile)
@@ -91,14 +92,13 @@ def load_settings():
     settings["host"] = config.get("acousticbrainz", "host")
 
     essentia = config.get("essentia", "path")
-    if not os.path.isabs(essentia):
-        essentia = os.path.abspath(os.path.expanduser(essentia))
-    if not os.path.exists(essentia):
+    essentia_path = distutils.spawn.find_executable(essentia)
+    if essentia_path is None:
         raise Exception ("Cannot find the extractor %r" % essentia)
 
     h = hashlib.sha1()
-    h.update(open(essentia, "rb").read())
-    settings["essentia_path"] = essentia
+    h.update(open(essentia_path, "rb").read())
+    settings["essentia_path"] = essentia_path
     settings["essentia_build_sha"] = h.hexdigest()
 
     settings["profile_file"] = _create_profile_file(settings["essentia_build_sha"])
