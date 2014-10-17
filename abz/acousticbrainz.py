@@ -121,7 +121,8 @@ def process_file(filepath):
                         submit_features(recid, features)
                     except requests.exceptions.HTTPError as e:
                         _update_progress(filepath, ":( submit", RED)
-                        # print(e.response.text)
+                        print()
+                        print(e.response.text)
                     add_to_filelist(filepath)
                     _update_progress(filepath, ":)", GREEN)
                 else:
