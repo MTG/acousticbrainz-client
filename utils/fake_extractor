@@ -11,5 +11,5 @@ if len(sys.argv) < 3:
 input = sys.argv[1]
 output = sys.argv[2]
 
-data = {"metadata": {"version": {"v": "1"}, "audio_properties": {"codec": "flac"}}}
+data = {"metadata": {"version": {"v": "1"}, "audio_properties": {"codec": "flac"}, "tags": {"musicbrainz_trackid": "0e11c0fd-a1da-4b88-a438-7ef55c5809ec"}}}
 json.dump(data, open(output, "w"))

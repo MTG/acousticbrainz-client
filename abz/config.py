@@ -10,6 +10,7 @@ import sys
 import hashlib
 import sqlite3
 import shutil
+import tempfile
 
 CONFIG_FILE="abzsubmit.conf"
 OLDCONFIGFILE = os.path.join(os.path.expanduser("~"), ".abzsubmit.conf")
@@ -42,6 +43,25 @@ def migrate_old_settings(dbfile):
             c.execute(query, (l.decode("utf-8"), ))
         conn.commit()
         os.unlink(PROCESSED_FILE_LIST)
+
+def _create_profile_file(essentia_build_sha):
+    """ A profile file contains options to the extractor, and
+        optionally additional data to add to the resulting output.
+        It's yaml, but we're going to write it manually so that
+        we don't need to depend on libyaml
+    """
+    template = """requireMbid: true
+indent: 0
+mergeValues:
+    metadata:
+        version:
+            essentia_build_sha: %s"""
+    profile = template % essentia_build_sha
+    fd, tmpname = tempfile.mkstemp(suffix='.yaml')
+    fp = os.fdopen(fd, "w")
+    fp.write(profile)
+    fp.close()
+    return tmpname
 
 def get_config_dir():
     confdir = os.path.join(os.path.expanduser("~"), ".abzsubmit")
@@ -80,6 +100,8 @@ def load_settings():
     h.update(open(essentia, "rb").read())
     settings["essentia_path"] = essentia
     settings["essentia_build_sha"] = h.hexdigest()
+
+    settings["profile_file"] = _create_profile_file(settings["essentia_build_sha"])
 
     extensions = config.get("acousticbrainz", "extensions")
     extensions = [".%s" % e.lower() for e in extensions.split()]

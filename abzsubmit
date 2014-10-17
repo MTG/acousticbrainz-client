@@ -6,12 +6,14 @@
 # acousticbrainz-client is available under the terms of the GNU
 # General Public License, version 3 or higher. See COPYING for more details.
 
+from __future__ import print_function
 import argparse
 from abz import acousticbrainz
 
 def main(paths):
     for path in paths:
         acousticbrainz.process(path)
+    print()
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Acousticbrainz client")
@@ -19,6 +21,10 @@ if __name__ == "__main__":
 
     args = p.parse_args()
     if args.p:
-        main(args.p)
+        try:
+            main(args.p)
+        except KeyboardInterrupt:
+            acousticbrainz.cleanup()
+            raise
     else:
         p.print_usage()
