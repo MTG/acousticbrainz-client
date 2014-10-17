@@ -5,6 +5,7 @@
 from __future__ import print_function
 
 import distutils
+import distutils.spawn
 import ConfigParser
 import os
 import sys
