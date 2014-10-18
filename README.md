@@ -34,9 +34,12 @@ Put your extractor in this directory. These files require no additional dependen
 
 We prefer that you use one of our provided extractors. This lets us be sure that different
 versions of software don't cause variations in the data that we collection.
-If you really want to, you can make your own.
+If you really want to, you can make your own, but note that this requires
+a fair number of dependencies to compile. It will certainly be easier to use one of
+our binaries to get started. 
+
 The extractor is provided as part of the [essentia project](http://essentia.upf.edu/).
-To build it, download essentia and compile the examples
+To build it, download essentia and compile the examples. 
 
     git clone https://github.com/MTG/essentia.git
     cd essentia
