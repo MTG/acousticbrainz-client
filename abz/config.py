@@ -8,6 +8,7 @@ import distutils
 import distutils.spawn
 import ConfigParser
 import os
+import os.path
 import sys
 import hashlib
 import sqlite3
@@ -93,7 +94,7 @@ def load_settings():
     settings["host"] = config.get("acousticbrainz", "host")
 
     essentia = config.get("essentia", "path")
-    essentia_path = distutils.spawn.find_executable(essentia)
+    essentia_path = os.path.abspath(distutils.spawn.find_executable(essentia))
     if essentia_path is None:
         raise Exception ("Cannot find the extractor %r" % essentia)
 
