@@ -28,7 +28,7 @@ program that analyses your music and generates a file.
 We provide static builds of extractors for popular platforms. Find one
 for your platform here:
 
-    http://acousticbrainz.org/download
+http://acousticbrainz.org/download
 
 Put your extractor in this directory. These files require no additional dependencies.
 
