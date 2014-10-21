@@ -5,7 +5,7 @@ import sys
 import json
 from math import fabs
 
-FLOAT_DIFF_THRESHOLD = 0.0001
+ERR_THRESHOLD = 0.0001 # range 0 - 1.0
 
 def traverse(path, jdata1, jdata2):
     if type(jdata1) is dict:
@@ -32,12 +32,15 @@ def traverse(path, jdata1, jdata2):
         return
 
     if type(jdata1) is float:
-        d = fabs(jdata1 - jdata2)
-        if d > FLOAT_DIFF_THRESHOLD:
-            print "%s : '%s' vs '%s' (diff %f)" % (":".join(path), repr(jdata1), repr(jdata2), d)
+        if jdata1 != jdata2:
+            err = (jdata1 - jdata2) / ((jdata1 + jdata2) / 2)
+            if err > ERR_THRESHOLD:
+                print "%s : '%s' vs '%s' (%.3f%% err)" % (":".join(path), repr(jdata1), repr(jdata2), err * 100)
     elif type(jdata1) is int:
         if jdata1 != jdata2:
-            print "%s : '%d' vs '%d'" % (":".join(path), jdata1, jdata2)
+            err = (jdata1 - jdata2) / ((jdata1 + jdata2) / 2.0)
+            if err > ERR_THRESHOLD:
+                print "%s : '%d' vs '%d' (%.3f%% err)" % (":".join(path), jdata1, jdata2, err * 100)
     elif repr(jdata1) != repr(jdata2):
         print "%s : '%s' vs '%s'" % (":".join(path), repr(jdata1), repr(jdata2))
 
