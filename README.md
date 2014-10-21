@@ -33,7 +33,7 @@ for your platform here:
 Put your extractor in this directory. These files require no additional dependencies.
 
 We prefer that you use one of our provided extractors. This lets us be sure that different
-versions of software don't cause variations in the data that we collection.
+versions of software don't cause variations in the data that we are collecting.
 If you really want to, you can make your own, but note that this requires
 a fair number of dependencies to compile. It will certainly be easier to use one of
 our binaries to get started. 
@@ -66,9 +66,9 @@ Running
 
 Run it like this:
 
-    ./absubmit [some dirs] ...
+    ./abzsubmit [some dirs] ...
 
-and go and have a coffee
+and go and have a coffee. :-)
 
 Configuration files:
 -------------------
@@ -76,7 +76,7 @@ Configuration files:
 ~/.abzsubmit/abzsubmit.conf
 ~/.abzsubmit/filelog.sqlite
 
-If you want to have a custom location of the extractor file, you can edit your
+If you want to `abzsubmit` to look in a custom location for your extractor program, you can edit your
 `~/.abzsubmit.conf` file. Add or edit the section that looks like this:
 
 ```
@@ -84,8 +84,8 @@ If you want to have a custom location of the extractor file, you can edit your
 path: /path/to/streaming_extractor_music
 ```
 
-If you don't specify an absolute path, we will first look in $PATH, and then
-the same directory as the submission script.
+If you don't specify an absolute path, we will first look in `$PATH`, and then
+the same directory as the submission script, `abzsubmit`.
 
 The sqlite database is used to keep track of uploaded files so that they are
 not submitted twice.
