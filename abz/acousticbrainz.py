@@ -16,7 +16,7 @@ import uuid
 try:
     import requests
 except ImportError:
-    from vendor import requests
+    from .vendor import requests
 
 from abz import compat, config
 
