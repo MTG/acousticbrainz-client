@@ -8,7 +8,8 @@ This client lets you submit your own audio features to the acousticbrainz projec
 Requirements
 ============
 
-This client has been tested on linux with python 2.7.
+This client has been tested on linux
+with python 2.6, 2.7, 3.1, 3.2, 3.3 and 3.4.
 
 The only additional requirement is the python `requests` package.
 On debian, ubuntu, and related distributions you can run
