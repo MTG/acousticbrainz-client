@@ -11,7 +11,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import urlparse
 import uuid
 
 try:
@@ -19,7 +18,7 @@ try:
 except ImportError:
     from vendor import requests
 
-from abz import config
+from abz import compat, config
 
 config.load_settings()
 conn = sqlite3.connect(config.get_sqlite_file())
@@ -81,7 +80,7 @@ def submit_features(recordingid, features):
     featstr = json.dumps(features)
 
     host = config.settings["host"]
-    url = urlparse.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
+    url = compat.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
     r = requests.post(url, data=featstr)
     r.raise_for_status()
 
