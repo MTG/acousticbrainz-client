@@ -14,7 +14,10 @@ import time
 import urlparse
 import uuid
 
-import requests
+try:
+    import requests
+except ImportError:
+    from vendor import requests
 
 import config
 
