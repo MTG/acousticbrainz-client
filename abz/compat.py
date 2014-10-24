@@ -18,3 +18,11 @@ if is_py2:
 else:
     from urllib.parse import urlunparse
     from configparser import RawConfigParser
+
+def decode(msg):
+    """decode if msg is a byte string, no-op otherwise
+    """
+    if isinstance(msg, bytes):
+        return msg.decode("utf-8", "replace")
+    else:
+        return msg

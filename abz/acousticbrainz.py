@@ -43,7 +43,7 @@ def _start_progress(msg, status="...", colour=RESET):
 def add_to_filelist(filepath, reason=None):
     query = """insert into filelog(filename, reason) values(?, ?)"""
     c = conn.cursor()
-    r = c.execute(query, (filepath.decode("utf-8"), reason))
+    r = c.execute(query, (compat.decode(filepath), reason))
     conn.commit()
 
 def is_valid_uuid(u):
@@ -56,7 +56,7 @@ def is_valid_uuid(u):
 def is_processed(filepath):
     query = """select * from filelog where filename = ?"""
     c = conn.cursor()
-    r = c.execute(query, (filepath.decode("utf-8"), ))
+    r = c.execute(query, (compat.decode(filepath), ))
     if len(r.fetchall()):
         return True
     else:
