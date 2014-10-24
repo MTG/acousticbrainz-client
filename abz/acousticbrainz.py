@@ -19,7 +19,7 @@ try:
 except ImportError:
     from vendor import requests
 
-import config
+from abz import config
 
 config.load_settings()
 conn = sqlite3.connect(config.get_sqlite_file())
