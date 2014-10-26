@@ -7,7 +7,7 @@
 # General Public License, version 3 or higher. See COPYING for more details.
 
 from __future__ import print_function
-import argparse
+import sys
 from abz import acousticbrainz
 
 def main(paths):
@@ -16,15 +16,12 @@ def main(paths):
     print()
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser(description="Acousticbrainz client")
-    p.add_argument("p", help="Path to upload", nargs='*')
+    if len(sys.argv) < 2:
+        print("usage: abzsubmit [submissionpath [morepath ...]]", file=sys.stderr)
+        sys.exit(1)
 
-    args = p.parse_args()
-    if args.p:
-        try:
-            main(args.p)
-        except KeyboardInterrupt:
-            acousticbrainz.cleanup()
-            raise
-    else:
-        p.print_usage()
+    try:
+        main(sys.argv[1:])
+    except KeyboardInterrupt:
+        acousticbrainz.cleanup()
+        raise

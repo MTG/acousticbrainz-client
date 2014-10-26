@@ -6,7 +6,6 @@ from __future__ import print_function
 
 import distutils
 import distutils.spawn
-import ConfigParser
 import os
 import os.path
 import sys
@@ -14,6 +13,8 @@ import hashlib
 import sqlite3
 import shutil
 import tempfile
+
+from abz import compat
 
 CONFIG_FILE="abzsubmit.conf"
 OLDCONFIGFILE = os.path.join(os.path.expanduser("~"), ".abzsubmit.conf")
@@ -86,7 +87,7 @@ def load_settings():
 
     defaultfile = os.path.join(os.path.dirname(__file__), "default.conf")
     configfile = os.path.join(get_config_dir(), CONFIG_FILE)
-    config = ConfigParser.RawConfigParser()
+    config = compat.RawConfigParser()
     config.read(defaultfile)
     if os.path.exists(configfile):
         config.read(configfile)

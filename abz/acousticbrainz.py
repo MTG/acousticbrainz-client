@@ -11,12 +11,14 @@ import subprocess
 import sys
 import tempfile
 import time
-import urlparse
 import uuid
 
-import requests
+try:
+    import requests
+except ImportError:
+    from .vendor import requests
 
-import config
+from abz import compat, config
 
 config.load_settings()
 conn = sqlite3.connect(config.get_sqlite_file())
@@ -41,7 +43,7 @@ def _start_progress(msg, status="...", colour=RESET):
 def add_to_filelist(filepath, reason=None):
     query = """insert into filelog(filename, reason) values(?, ?)"""
     c = conn.cursor()
-    r = c.execute(query, (filepath.decode("utf-8"), reason))
+    r = c.execute(query, (compat.decode(filepath), reason))
     conn.commit()
 
 def is_valid_uuid(u):
@@ -54,7 +56,7 @@ def is_valid_uuid(u):
 def is_processed(filepath):
     query = """select * from filelog where filename = ?"""
     c = conn.cursor()
-    r = c.execute(query, (filepath.decode("utf-8"), ))
+    r = c.execute(query, (compat.decode(filepath), ))
     if len(r.fetchall()):
         return True
     else:
@@ -78,7 +80,7 @@ def submit_features(recordingid, features):
     featstr = json.dumps(features)
 
     host = config.settings["host"]
-    url = urlparse.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
+    url = compat.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
     r = requests.post(url, data=featstr)
     r.raise_for_status()
 
