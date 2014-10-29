@@ -8,18 +8,8 @@ This client lets you submit your own audio features to the acousticbrainz projec
 Requirements
 ============
 
-This client has been tested on linux
-with python 2.6, 2.7, 3.1, 3.2, 3.3 and 3.4.
-
-The only additional requirement is the python `requests` package.
-On debian, ubuntu, and related distributions you can run
-
-    $ sudo apt-get install python-requests
-
-or install with pip:
-
-    $ sudo pip install -r requirements.txt
-
+This client has been tested on Linux and OSX with python 2.6, 2.7, and 3.x.
+It has no additional dependencies.
 
 Getting a feature extractor
 ---------------------------
@@ -37,10 +27,10 @@ We prefer that you use one of our provided extractors. This lets us be sure that
 versions of software don't cause variations in the data that we are collecting.
 If you really want to, you can make your own, but note that this requires
 a fair number of dependencies to compile. It will certainly be easier to use one of
-our binaries to get started. 
+our binaries to get started.
 
 The extractor is provided as part of the [essentia project](http://essentia.upf.edu/).
-To build it, download essentia and compile the examples. 
+To build it, download essentia and compile the examples.
 
     git clone https://github.com/MTG/essentia.git
     cd essentia
