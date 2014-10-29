@@ -5,7 +5,7 @@ from distutils.core import setup
 setup(
     name="abzsubmit",
     version='0.1',
-    description="submission client for acousticbrainz project",
+    description="Submission client for AcousticBrainz project",
     author="Universitat Pompeu Fabra",
     author_email="alastair.porter@upf.edu",
     url="http://acousticbrainz.org",
