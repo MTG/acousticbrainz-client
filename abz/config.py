@@ -95,9 +95,16 @@ def load_settings():
     settings["host"] = config.get("acousticbrainz", "host")
 
     essentia = config.get("essentia", "path")
-    essentia_path = os.path.abspath(distutils.spawn.find_executable(essentia))
+    # Look in path
+    essentia_path = distutils.spawn.find_executable(essentia)
+    if essentia_path is None:
+        # If not there, look for it in the directory that we executed from
+        # (will only be set if we call abzsubmit)
+        path = os.path.abspath(os.path.dirname(sys.argv[0]))
+        essentia_path = distutils.spawn.find_executable(essentia, path)
     if essentia_path is None:
         raise Exception ("Cannot find the extractor %r" % essentia)
+    essentia_path = os.path.abspath(essentia_path)
 
     h = hashlib.sha1()
     h.update(open(essentia_path, "rb").read())
