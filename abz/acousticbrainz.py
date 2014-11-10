@@ -10,7 +10,6 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
-import time
 import uuid
 
 try:
@@ -27,6 +26,8 @@ VERBOSE = False
 RESET = "\x1b[0m"
 RED = "\x1b[31m"
 GREEN = "\x1b[32m"
+
+
 def _update_progress(msg, status="...", colour=RESET):
     if VERBOSE:
         sys.stdout.write("%s[%-10s]%s " % (colour, status, RESET))
@@ -36,15 +37,18 @@ def _update_progress(msg, status="...", colour=RESET):
         sys.stdout.write(msg+"\x1b[K\r")
         sys.stdout.flush()
 
+
 def _start_progress(msg, status="...", colour=RESET):
     print()
     _update_progress(msg, status, colour)
 
+
 def add_to_filelist(filepath, reason=None):
     query = """insert into filelog(filename, reason) values(?, ?)"""
     c = conn.cursor()
-    r = c.execute(query, (compat.decode(filepath), reason))
+    c.execute(query, (compat.decode(filepath), reason))
     conn.commit()
+
 
 def is_valid_uuid(u):
     try:
@@ -52,6 +56,7 @@ def is_valid_uuid(u):
         return True
     except ValueError:
         return False
+
 
 def is_processed(filepath):
     query = """select * from filelog where filename = ?"""
@@ -61,6 +66,7 @@ def is_processed(filepath):
         return True
     else:
         return False
+
 
 def run_extractor(input_path, output_path):
     """
@@ -76,6 +82,7 @@ def run_extractor(input_path, output_path):
     retcode = p.returncode
     return retcode, out
 
+
 def submit_features(recordingid, features):
     featstr = json.dumps(features)
 
@@ -83,6 +90,7 @@ def submit_features(recordingid, features):
     url = compat.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
     r = requests.post(url, data=featstr)
     r.raise_for_status()
+
 
 # codec names from ffmpeg
 def process_file(filepath):
@@ -105,7 +113,7 @@ def process_file(filepath):
         print()
         print(out)
         add_to_filelist(filepath, "extractor")
-    elif retcode > 0 or retcode < 0: # Unknown error, not 0, 1, 2
+    elif retcode > 0 or retcode < 0:  # Unknown error, not 0, 1, 2
         _update_progress(filepath, ":( unk %s" % retcode, RED)
         print()
         print(out)
@@ -137,6 +145,7 @@ def process_file(filepath):
     if os.path.isfile(tmpname):
         os.unlink(tmpname)
 
+
 def process_directory(directory_path):
     _start_progress("processing %s" % directory_path)
 
@@ -154,6 +163,7 @@ def process(path):
         process_file(path)
     elif os.path.isdir(path):
         process_directory(path)
+
 
 def cleanup():
     if os.path.isfile(config.settings["profile_file"]):

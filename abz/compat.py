@@ -19,6 +19,7 @@ else:
     from urllib.parse import urlunparse
     from configparser import RawConfigParser
 
+
 def decode(msg):
     """decode if msg is a byte string, no-op otherwise
     """

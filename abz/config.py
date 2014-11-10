@@ -16,11 +16,12 @@ import tempfile
 
 from abz import compat
 
-CONFIG_FILE="abzsubmit.conf"
+CONFIG_FILE = "abzsubmit.conf"
 OLDCONFIGFILE = os.path.join(os.path.expanduser("~"), ".abzsubmit.conf")
 PROCESSED_FILE_LIST = os.path.expanduser("~/.abzsubmit.log")
 
 settings = {}
+
 
 def create_sqlite(dbfile):
     conn = sqlite3.connect(dbfile)
@@ -28,6 +29,7 @@ def create_sqlite(dbfile):
     c.execute("""create table filelog (id integer primary key, filename text not null, reason text)""")
     c.execute("""create index filelog_filename on filelog(filename)""")
     conn.commit()
+
 
 def migrate_old_settings(dbfile):
     # 1. Move old config file to config directory
@@ -48,6 +50,7 @@ def migrate_old_settings(dbfile):
         conn.commit()
         os.unlink(PROCESSED_FILE_LIST)
 
+
 def _create_profile_file(essentia_build_sha):
     """ A profile file contains options to the extractor, and
         optionally additional data to add to the resulting output.
@@ -67,13 +70,16 @@ mergeValues:
     fp.close()
     return tmpname
 
+
 def get_config_dir():
     confdir = os.path.join(os.path.expanduser("~"), ".abzsubmit")
     return confdir
 
+
 def get_sqlite_file():
     dbfile = os.path.join(get_config_dir(), "filelog.sqlite")
     return dbfile
+
 
 def load_settings():
     if not os.path.exists(get_config_dir()):
@@ -103,7 +109,7 @@ def load_settings():
         path = os.path.abspath(os.path.dirname(sys.argv[0]))
         essentia_path = distutils.spawn.find_executable(essentia, path)
     if essentia_path is None:
-        raise Exception ("Cannot find the extractor %r" % essentia)
+        raise Exception("Cannot find the extractor %r" % essentia)
     essentia_path = os.path.abspath(essentia_path)
 
     h = hashlib.sha1()
