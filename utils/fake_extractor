@@ -8,8 +8,23 @@ import json
 
 if len(sys.argv) < 3:
     pass
-input = sys.argv[1]
+
 output = sys.argv[2]
 
-data = {"metadata": {"version": {"v": "1"}, "audio_properties": {"codec": "flac"}, "tags": {"musicbrainz_trackid": ["0e11c0fd-a1da-4b88-a438-7ef55c5809ec"]}}}
-json.dump(data, open(output, "w"))
+data = {
+    "metadata": {
+        "version": {
+            "v": "1"
+        },
+        "audio_properties": {
+            "codec": "flac"
+        },
+        "tags": {
+            "musicbrainz_trackid": [
+                "0e11c0fd-a1da-4b88-a438-7ef55c5809ec"
+            ]
+        }
+    }
+}
+with open(output, 'w') as f:
+    json.dump(data, f)
