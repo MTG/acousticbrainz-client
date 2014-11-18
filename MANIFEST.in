@@ -1,0 +1,2 @@
+recursive-include abz/vendor *
+include streaming_extractor_music
