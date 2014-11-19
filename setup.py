@@ -11,7 +11,7 @@ except ImportError:
 
 setup(
     name="abzsubmit",
-    version='0.1',
+    version='0.2dev',
     description="Submission client for AcousticBrainz project",
     author="Universitat Pompeu Fabra",
     author_email="alastair.porter@upf.edu",
