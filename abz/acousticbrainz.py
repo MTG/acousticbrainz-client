@@ -69,10 +69,6 @@ def is_processed(filepath):
 
 
 def run_extractor(input_path, output_path):
-    """
-    :raises subprocess.CalledProcessError: if the extractor exits with a non-zero
-                                           return code
-    """
     extractor = config.settings["essentia_path"]
     profile = config.settings["profile_file"]
     args = [extractor, input_path, output_path, profile]
@@ -92,7 +88,6 @@ def submit_features(recordingid, features):
     r.raise_for_status()
 
 
-# codec names from ffmpeg
 def process_file(filepath):
     _start_progress(filepath)
     if is_processed(filepath):
