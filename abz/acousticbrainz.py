@@ -116,12 +116,13 @@ def process_file(filepath):
         if os.path.isfile(tmpname):
             try:
                 features = json.load(open(tmpname))
-                trackids = features["metadata"]["tags"]["musicbrainz_trackid"]
-                if not isinstance(trackids, list):
-                    trackids = [trackids]
-                trs = [t for t in trackids if is_valid_uuid(t)]
-                if trs:
-                    recid = trs[0]
+                # Recording MBIDs are tagged with _trackid for historic reasons
+                recordingids = features["metadata"]["tags"]["musicbrainz_trackid"]
+                if not isinstance(recordingids, list):
+                    recordingids = [recordingids]
+                recs = [r for r in recordingids if is_valid_uuid(r)]
+                if recs:
+                    recid = recs[0]
                     try:
                         submit_features(recid, features)
                     except requests.exceptions.HTTPError as e:
