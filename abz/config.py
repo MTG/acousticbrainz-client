@@ -56,6 +56,7 @@ def _create_profile_file(essentia_build_sha):
     """
     template = """requireMbid: true
 indent: 0
+outputFrames: 1
 mergeValues:
     metadata:
         version:
@@ -93,6 +94,7 @@ def load_settings():
         config.read(configfile)
 
     settings["host"] = config.get("acousticbrainz", "host")
+    settings["framehost"] = config.get("acousticbrainz", "framehost")
 
     essentia = config.get("essentia", "path")
     # Look in path

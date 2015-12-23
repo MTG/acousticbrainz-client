@@ -76,12 +76,17 @@ def run_extractor(input_path, output_path):
     retcode = p.returncode
     return retcode, out
 
-def submit_features(recordingid, features):
+def submit_features(recordingid, features, framedata):
     featstr = json.dumps(features)
 
     host = config.settings["host"]
     url = compat.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
     r = requests.post(url, data=featstr)
+    r.raise_for_status()
+
+    host = config.settings["framehost"]
+    url = compat.urlunparse(('http', host, '/%s/low-level' % recordingid, '', '', ''))
+    r = requests.post(url, data=open(framedata))
     r.raise_for_status()
 
 # codec names from ffmpeg
@@ -120,7 +125,7 @@ def process_file(filepath):
                 if trs:
                     recid = trs[0]
                     try:
-                        submit_features(recid, features)
+                        submit_features(recid, features, "%s_frame" % tmpname)
                     except requests.exceptions.HTTPError as e:
                         _update_progress(filepath, ":( submit", RED)
                         print()
