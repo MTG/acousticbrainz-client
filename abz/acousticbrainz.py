@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import uuid
+import pandas as pd
 
 try:
     import requests
@@ -33,6 +34,12 @@ def _update_progress(msg, status="...", colour=RESET):
         sys.stdout.write("%s[%-10s]%s " % (colour, status, RESET))
         print(msg.encode("ascii", "ignore"))
     else:
+        data_frame = pd.read_sql("select * from filelog",conn)
+        listof = data_frame.index[data_frame['filename'] == filepath].tolist()
+        if listof:
+            reason_of_filelog = data_frame["reason"][listof[-1]]
+            if reason_of_filelog=="nombid":
+                status = ":( nombid"
         sys.stdout.write("%s[%-10s]%s " % (colour, status, RESET))
         sys.stdout.write(msg+"\x1b[K\r")
         sys.stdout.flush()
