@@ -1,3 +1,4 @@
 *.swp
 *.pyc
 env
+streaming_extractor_music*
