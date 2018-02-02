@@ -11,7 +11,6 @@ import subprocess
 import sys
 import tempfile
 import uuid
-import pandas as pd
 
 try:
     import requests
@@ -34,12 +33,6 @@ def _update_progress(msg, status="...", colour=RESET):
         sys.stdout.write("%s[%-10s]%s " % (colour, status, RESET))
         print(msg.encode("ascii", "ignore"))
     else:
-        data_frame = pd.read_sql("select * from filelog",conn)
-        listof = data_frame.index[data_frame['filename'] == filepath].tolist()
-        if listof:
-            reason_of_filelog = data_frame["reason"][listof[-1]]
-            if reason_of_filelog=="nombid":
-                status = ":( nombid"
         sys.stdout.write("%s[%-10s]%s " % (colour, status, RESET))
         sys.stdout.write(msg+"\x1b[K\r")
         sys.stdout.flush()
@@ -74,6 +67,12 @@ def is_processed(filepath):
     else:
         return False
 
+def get_processed_status(filepath):
+    query = """select reason from filelog where filename = ?"""
+    c = conn.cursor()
+    c.execute(query,(filepath,))
+    processed_status = c.fetchone()
+    return processed_status[0]
 
 def run_extractor(input_path, output_path):
     extractor = config.settings["essentia_path"]
@@ -98,7 +97,14 @@ def submit_features(recordingid, features):
 def process_file(filepath):
     _start_progress(filepath)
     if is_processed(filepath):
-        _update_progress(filepath, ":) done", GREEN)
+        processed_status = get_processed_status(filepath)
+        if processed_status == None:
+	        status = ":) done"
+	        colour = GREEN
+        else:
+	        status = ":( nombid"
+	        colour = RED
+        _update_progress(filepath, status, colour)
         return
 
     fd, tmpname = tempfile.mkstemp(suffix='.json')
