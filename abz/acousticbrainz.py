@@ -67,12 +67,14 @@ def is_processed(filepath):
     else:
         return False
 
-def get_processed_status(filepath):
+
+def get_status(filepath):
     query = """select reason from filelog where filename = ?"""
     c = conn.cursor()
     c.execute(query,(filepath,))
-    processed_status = c.fetchone()
-    return processed_status[0]
+    status = c.fetchone()
+    return status[0]
+
 
 def run_extractor(input_path, output_path):
     extractor = config.settings["essentia_path"]
@@ -97,14 +99,17 @@ def submit_features(recordingid, features):
 def process_file(filepath):
     _start_progress(filepath)
     if is_processed(filepath):
-        processed_status = get_processed_status(filepath)
-        if processed_status == None:
-	        status = ":) done"
-	        colour = GREEN
+        status = get_status(filepath)
+        if status == None:
+            processed_status = ":) done"
+            colour = GREEN
+        elif status == "extractor":
+            processed_status = ":( extract"
+            colour = RED
         else:
-	        status = ":( nombid"
-	        colour = RED
-        _update_progress(filepath, status, colour)
+            processed_status = ":( nombid"
+            colour = RED
+        _update_progress(filepath, processed_status, colour)
         return
 
     fd, tmpname = tempfile.mkstemp(suffix='.json')
