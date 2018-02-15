@@ -5,11 +5,30 @@
 
 import sys
 import json
+import random
+
+# Set to True to randomly successfully finish, but generate an invalid MBID
+FAIL_MBID = False
+# Set to True to randomly successfully finish, but generate invalid Json
+FAIL_JSON = False
+# Set to True to randomly fail to process the file with either
+# 2 = no mbid in file, or 1 = other error
+FAIL_EXTRACT = False
+
+# 0 = success
+# 1 = error in the extractor
+# 2 = File doesn't have an mbid
+exit_statuses = [0]*4 + [1,2]
 
 if len(sys.argv) < 3:
     pass
 
 output = sys.argv[2]
+
+mbid = "0e11c0fd-a1da-4b88-a438-7ef55c5809ec"
+# Randomly decide to return an invalid mbid
+if FAIL_MBID and random.random() > 0.8:
+    mbid = mbid[:10]
 
 data = {
     "metadata": {
@@ -20,11 +39,21 @@ data = {
             "codec": "flac"
         },
         "tags": {
-            "musicbrainz_trackid": [
-                "0e11c0fd-a1da-4b88-a438-7ef55c5809ec"
-            ]
+            "musicbrainz_trackid": [mbid]
         }
     }
 }
+
+# Sometimes we'll fail because the "file" doesn't have an mbid, or
+# the extractor had some problem
+status = random.choice(exit_statuses)
+if FAIL_EXTRACT and status > 0:
+    sys.exit(status)
+
+datastr = json.dumps(data)
+# Randomly decide to return invalid json
+if FAIL_JSON and random.random() > 0.8:
+    datastr = datastr[:-10]
+
 with open(output, 'w') as f:
-    json.dump(data, f)
+    f.write(datastr)
