@@ -58,14 +58,24 @@ def is_valid_uuid(u):
         return False
 
 
-def is_processed(filepath):
-    query = """select * from filelog where filename = ?"""
+def get_processed_status(filepath):
+    query = """select reason from filelog where filename = ?"""
     c = conn.cursor()
     r = c.execute(query, (compat.decode(filepath), ))
-    if len(r.fetchall()):
-        return True
+    row = r.fetchone()
+    if row:
+        reason = row[0]
+        # An empty `reason` field means that it was successful
+        if reason is None:
+            colour, reason = GREEN, ":) done"
+        else:
+            # The status is only 10 chars wide (3 for smile) so we
+            # chop the status text to 7
+            colour = RED
+            reason = ":( %s" % reason[:7]
+        return True, (colour, reason)
     else:
-        return False
+        return False, None
 
 
 def run_extractor(input_path, output_path):
@@ -90,8 +100,10 @@ def submit_features(recordingid, features):
 
 def process_file(filepath):
     _start_progress(filepath)
-    if is_processed(filepath):
-        _update_progress(filepath, ":) done", GREEN)
+    processed, reason = get_processed_status(filepath)
+    if processed:
+        colour, status = reason
+        _update_progress(filepath, status, colour)
         return
 
     fd, tmpname = tempfile.mkstemp(suffix='.json')
