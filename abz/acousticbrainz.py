@@ -58,21 +58,25 @@ def is_valid_uuid(u):
         return False
 
 
-def is_processed(filepath):
-    query = """select * from filelog where filename = ?"""
-    c = conn.cursor()
-    r = c.execute(query, (compat.decode(filepath), ))
-    if len(r.fetchall()):
-        return True
-    else:
-        return False
-
 def get_processed_status(filepath):
     query = """select reason from filelog where filename = ?"""
     c = conn.cursor()
-    c.execute(query,(filepath,))
-    processed_status = c.fetchone()
-    return processed_status[0]
+    r = c.execute(query, (compat.decode(filepath), ))
+    row = r.fetchone()
+    if row:
+        reason = row[0]
+        # An empty `reason` field means that it was successful
+        if reason is None:
+            colour, reason = GREEN, ":) done"
+        else:
+            # The status is only 10 chars wide (3 for smile) so we
+            # chop the status text to 7
+            colour = RED
+            reason = ":( %s" % reason[:7]
+        return True, (colour, reason)
+    else:
+        return False, None
+
 
 def run_extractor(input_path, output_path):
     extractor = config.settings["essentia_path"]
@@ -96,14 +100,9 @@ def submit_features(recordingid, features):
 
 def process_file(filepath):
     _start_progress(filepath)
-    if is_processed(filepath):
-        processed_status = get_processed_status(filepath)
-        if processed_status == None:
-	        status = ":) done"
-	        colour = GREEN
-        else:
-	        status = ":( nombid"
-	        colour = RED
+    processed, reason = get_processed_status(filepath)
+    if processed:
+        colour, status = reason
         _update_progress(filepath, status, colour)
         return
 
