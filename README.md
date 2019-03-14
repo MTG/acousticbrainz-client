@@ -1,7 +1,7 @@
 AcousticBrainz client
 ---------------------
 
-For more information about AcousticBrainz, see http://acousticbrainz.org
+For more information about AcousticBrainz, see https://acousticbrainz.org
 
 This client lets you submit your own audio features to the AcousticBrainz project.
 
@@ -19,7 +19,7 @@ program that analyses your music and generates a file.
 We provide static builds of extractors for popular platforms. Find one
 for your platform here:
 
-http://acousticbrainz.org/download
+https://acousticbrainz.org/download
 
 Put your extractor in this directory. These files require no additional dependencies.
 
@@ -29,7 +29,7 @@ If you really want to, you can make your own, but note that this requires
 a fair number of dependencies to compile. It will certainly be easier to use one of
 our binaries to get started.
 
-The extractor is provided as part of the [Essentia project](http://essentia.upf.edu/).
+The extractor is provided as part of the [Essentia project](https://essentia.upf.edu/).
 To build it, download Essentia and compile the examples.
 
     git clone https://github.com/MTG/essentia.git

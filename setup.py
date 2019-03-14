@@ -15,7 +15,7 @@ setup(
     description="Submission client for AcousticBrainz project",
     author="Universitat Pompeu Fabra",
     author_email="alastair.porter@upf.edu",
-    url="http://acousticbrainz.org",
+    url="https://acousticbrainz.org",
     packages=['abz'],
     package_data={'abz': ['default.conf']},
     scripts=['abzsubmit'],
